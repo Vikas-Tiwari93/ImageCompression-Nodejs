@@ -16,7 +16,9 @@ export const CompressController = async (req, res) => {
   const newImage = req.file;
 
   try {
-    if (newImage) {
+    if (newImage.mimetype !== "image/png") {
+      return res.status(BAD_REQUEST).json({ message: "Not an ImageFile" });
+    } else if (newImage) {
       let promises = [
         imageCompression(`${path}/desktop`, newImage, compressionMobile),
         imageCompression(`${path}/tablet`, newImage, compressionTablet),
