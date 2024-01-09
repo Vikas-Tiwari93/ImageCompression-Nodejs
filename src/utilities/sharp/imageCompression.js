@@ -44,11 +44,37 @@ export async function imageCompression(path, requestFile, compressionOptions) {
     return err;
   }
 }
+export async function imageCompressionWithFilepath(
+  outputPath,
+  requestFilePath,
+  compressionOptions
+) {
+  try {
+    let imageBuffer = await new Promise((resolve, reject) => {
+      sharp(requestFilePath)
+        .toFormat("webp")
+        .webp(compressionOptions)
+        .toBuffer((err, compressedBuffer) => {
+          if (err) {
+            reject(err);
+          }
+          resolve(compressedBuffer);
+        });
+    });
+    let requestFile = {};
+    let nameArr = requestFilePath.split("/");
+    requestFile.originalname = nameArr[nameArr.length - 1];
+    return { imageBuffer, outputPath, requestFile };
+  } catch (err) {
+    return err;
+  }
+}
 
 export function uploadImage(compressedBufferArray) {
   let output = [];
+
   compressedBufferArray.forEach((element) => {
-    const outputImagePath = `${element.path}/${filename(
+    const outputImagePath = `${element.outputPath}/${filename(
       element.requestFile
     )}.webp`;
 
@@ -60,4 +86,21 @@ export function uploadImage(compressedBufferArray) {
     });
   });
   return output;
+}
+
+export async function imageInDirToArray(inputDirectory) {
+  return await new Promise((res, rej) => {
+    fs.readdir(inputDirectory, (err, files) => {
+      if (err) {
+        rej(err);
+      }
+      let imageArray = files
+        .filter((file) => {
+          return /\.(jpg|jpeg|png|gif)$/i.test(file);
+        })
+        .map((file) => `${inputDirectory}/${file}`);
+
+      res(imageArray);
+    });
+  });
 }

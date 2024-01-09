@@ -9,6 +9,7 @@ export const makeDirectories = (path) => {
 };
 
 export const initalServicesInit = () => {
+  makeDirectories(`${path}/uncompressed`);
   makeDirectories(`${path}/desktop`);
   makeDirectories(`${path}/tablet`);
   makeDirectories(`${path}/mobile`);
