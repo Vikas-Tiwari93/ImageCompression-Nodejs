@@ -10,7 +10,8 @@ two APIs for image compression.
     <p> POST image as FormData with key as "newImage" on http://localhost:5000/image/upload/compress
      it will primarily save as webp</p>
      <h2> 2. image compression from know directory path by selecting only images in a directory.</h2>
-    <p> GET on http://localhost:5000/image/manual/compress?extension=
+    <p> start the server it will create all directories needed and fill the uncompressed directory with images to be compressed. then
+     GET on http://localhost:5000/image/manual/compress?extension=
      ( at last after " = ", you can give webp/avif/heif extention to which you want it to be converted )
      </p>
 
