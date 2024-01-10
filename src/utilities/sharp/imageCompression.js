@@ -39,7 +39,7 @@ export async function imageCompression(path, requestFile, compressionOptions) {
           resolve(compressedBuffer);
         });
     });
-    return { imageBuffer, path, requestFile };
+    return { imageBuffer, path, requestFile, imageExtension: "webp" };
   } catch (err) {
     return err;
   }
