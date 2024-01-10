@@ -46,39 +46,49 @@ export const CompressController = async (req, res) => {
 };
 
 export const ManualCompressController = async (req, res) => {
+  const imageExtension = req.query.extension;
   try {
     let imageArray = await imageInDirToArray(`${path}/uncompressed`);
+    let isCompleted = false;
 
-    imageArray.forEach(async (Filepath, index) => {
+    for (let i = 0; i < imageArray.length; i++) {
+      const Filepath = imageArray[i];
+
+      console.log("inside image array");
       let promises = [
         imageCompressionWithFilepath(
           `${path}/mobile`,
           Filepath,
-          compressionMobile
+          compressionMobile,
+          imageExtension
         ),
         imageCompressionWithFilepath(
           `${path}/tablet`,
           Filepath,
-          compressionTablet
+          compressionTablet,
+          imageExtension
         ),
         imageCompressionWithFilepath(
           `${path}/desktop`,
           Filepath,
-          compressionDektop
+          compressionDektop,
+          imageExtension
         ),
       ];
 
       let results = await Promise.all(promises);
+      console.log("qwer", results);
+
       if (results.length === promises.length) {
+        console.log("before upload img");
         uploadImage(results);
-        if (index === imageArray.length - 1) {
-          return res.status(SUCCESS).json({ message: "compression completed" });
-        }
       }
-      return res
-        .status(BAD_REQUEST)
-        .json({ message: " Cant completed compression" });
-    });
+      if (i === imageArray.length - 1) {
+        return res.status(SUCCESS).json({ message: "compression completed" });
+      } else {
+        console.log("cant complete compression for" + Filepath);
+      }
+    }
 
     return res.status(BAD_REQUEST).json({ message: "Invalid Request" });
   } catch (error) {

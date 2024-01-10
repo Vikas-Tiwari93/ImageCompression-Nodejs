@@ -16,9 +16,9 @@ export const compressionTablet = {
   compressionLevel: 6,
 };
 export const compressionDektop = {
-  quality: 50,
+  quality: 30,
   progressive: true,
-  compressionLevel: 2,
+  compressionLevel: 4,
 };
 
 function filename(file) {
@@ -47,25 +47,38 @@ export async function imageCompression(path, requestFile, compressionOptions) {
 export async function imageCompressionWithFilepath(
   outputPath,
   requestFilePath,
-  compressionOptions
+  compressionOptions,
+  imageExtension
 ) {
   try {
     let imageBuffer = await new Promise((resolve, reject) => {
-      sharp(requestFilePath)
-        .toFormat("webp")
-        .webp(compressionOptions)
-        .toBuffer((err, compressedBuffer) => {
-          if (err) {
-            reject(err);
-          }
-          resolve(compressedBuffer);
-        });
+      let pipeline = sharp(requestFilePath).toFormat(`${imageExtension}`);
+
+      switch (imageExtension) {
+        case "webp":
+          pipeline = pipeline.webp(compressionOptions);
+          break;
+        case "heif":
+          pipeline = pipeline.heif(compressionOptions);
+          break;
+        case "avif":
+          pipeline = pipeline.avif(compressionOptions);
+          break;
+      }
+
+      pipeline = pipeline.toBuffer((err, compressedBuffer) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(compressedBuffer);
+      });
     });
     let requestFile = {};
     let nameArr = requestFilePath.split("/");
     requestFile.originalname = nameArr[nameArr.length - 1];
-    return { imageBuffer, outputPath, requestFile };
+    return { imageBuffer, outputPath, requestFile, imageExtension };
   } catch (err) {
+    console.log(err);
     return err;
   }
 }
@@ -76,7 +89,7 @@ export function uploadImage(compressedBufferArray) {
   compressedBufferArray.forEach((element) => {
     const outputImagePath = `${element.outputPath}/${filename(
       element.requestFile
-    )}.webp`;
+    )}.${element.imageExtension}`;
 
     output.push(outputImagePath);
     fs.writeFile(outputImagePath, element.imageBuffer, (err) => {
