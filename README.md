@@ -1,4 +1,5 @@
-# Codewise-backend
+
+# ImageCompression-Nodejs.
 
 it will automatically run on port 5000.
 must setup Env for tinypng is being used. only need a key.
@@ -12,4 +13,3 @@ two APIs for image compression.
      GET on http://localhost:5000/image/manual/compress?extension=
      ( at last after " = ", you can give webp/avif/heif extention to which you want it to be converted )
 
-# ImageCompression-Nodejs.
