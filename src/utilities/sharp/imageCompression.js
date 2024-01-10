@@ -48,7 +48,7 @@ export async function imageCompressionWithFilepath(
   outputPath,
   requestFilePath,
   compressionOptions,
-  imageExtension
+  imageExtension = "webp"
 ) {
   try {
     let imageBuffer = await new Promise((resolve, reject) => {
